@@ -1,5 +1,9 @@
 package com.rockthejvm.practice
 
+import java.io.File
+import java.io.FileWriter
+import java.io.PrintWriter
+
 object KotlinTags {
     /*
         HTML rendering tags
@@ -32,10 +36,7 @@ object KotlinTags {
 
     sealed interface HtmlTag
     sealed interface HtmlElement
-    data class HtmlString(val str: String): HtmlTag{
-        override fun toString(): String =
-            "\"${str}\""
-    }
+
     data class Html(val head: Head, val body: Body): HtmlElement{
         override fun toString(): String =
             "<html>\n$head\n$body\n</html>"
@@ -46,20 +47,20 @@ object KotlinTags {
     }
     data class Title(val title: String): HtmlElement{
         override fun toString(): String =
-            "<title>${title}</title)"
+            "<title>${title}</title>"
     }
     data class Body(val children: List<HtmlElement>): HtmlElement{
         override fun toString(): String =
-            children.joinToString("\n", "<body>","</body")
+            children.joinToString("\n", "<body>","</body>")
     }
     data class Div(val children: List<HtmlElement>, val id: String?=null, val className: String?=null): HtmlElement{
         val idAttr = id?.let { " id = \"$it\" " } ?: ""
         val classAttr = className?.let { " className = \"$it\" " } ?: ""
         val innerHtml = children.joinToString("\n")
         override fun toString(): String =
-            "<div${idAttr}${classAttr}>${children}>$innerHtml</div>"
+            "<div$idAttr$classAttr>$innerHtml</div>"
     }
-    data class Paragraph(val content: String): HtmlElement{
+    data class P(val content: String): HtmlElement{
         override fun toString(): String =
             "<p>$content</p>"
     }
@@ -67,7 +68,7 @@ object KotlinTags {
     class DivBuilder(val id: String?, val className: String?) {
         private val children = mutableListOf<HtmlElement>()
         fun p(content: String) {
-            children.add(Paragraph(content))
+            children.add(P(content))
         }
 
         fun build() = Div(children, id, className)
@@ -82,7 +83,7 @@ object KotlinTags {
         }
 
         fun p(content: String) {
-            children.add(Paragraph(content))
+            children.add(P(content))
         }
 
         fun build() = Body(children)
@@ -129,7 +130,7 @@ object KotlinTags {
             title("My first Title")
             body {
                 div(id="header", className = "top-class") {
-                    p("")
+                    p("Very nice content")
                 }
                 div {
                     p("Some other content")
@@ -141,6 +142,8 @@ object KotlinTags {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        println(htmlExample)
+        val page = PrintWriter(FileWriter(File("src/main/resources/sample.html")))
+        page.println(htmlExample)
+        page.close()
     }
 }
