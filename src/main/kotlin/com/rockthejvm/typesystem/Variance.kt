@@ -68,8 +68,11 @@ object Variance {
     abstract class LList<out A> {
         abstract fun head(): A      // 1st item in the list
         abstract fun tail(): LList<A>   // rest of the list without the head
+
     }
 
+    fun <B, A:B> LList<A>.add(element: B) =
+        Cons(element, this)
     data object EmptyList: LList<Nothing>() {
         override fun head(): Nothing = throw NoSuchElementException()
 
